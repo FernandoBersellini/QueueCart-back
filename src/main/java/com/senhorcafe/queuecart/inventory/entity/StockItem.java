@@ -1,4 +1,4 @@
-package com.senhorcafe.queuecart.inventory;
+package com.senhorcafe.queuecart.inventory.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

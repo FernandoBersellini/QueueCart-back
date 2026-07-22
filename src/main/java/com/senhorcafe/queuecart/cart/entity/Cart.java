@@ -20,6 +20,7 @@ public class Cart {
     private Long userId;
 
     @ElementCollection
+    @CollectionTable(name = "cart_items", joinColumns = @JoinColumn(name = "cart_id"))
     private List<CartItem> items;
 
     @CreationTimestamp

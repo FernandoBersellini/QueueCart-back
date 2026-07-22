@@ -24,6 +24,7 @@ public class Order {
     private OrderStatus status;
 
     @ElementCollection
+    @CollectionTable(name = "order_items", joinColumns = @JoinColumn(name = "order_id"))
     private List<OrderItem> items;
 
     @CreationTimestamp

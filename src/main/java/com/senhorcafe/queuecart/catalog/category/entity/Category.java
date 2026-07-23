@@ -25,7 +25,7 @@ public class Category {
     private String description;
 
     @Column(name = "active")
-    private boolean active;
+    private boolean active = true;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")

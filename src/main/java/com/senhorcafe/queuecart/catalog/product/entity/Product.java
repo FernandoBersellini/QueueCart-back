@@ -30,7 +30,7 @@ public class Product {
     private BigDecimal price;
 
     @Column(name = "active")
-    private boolean active;
+    private boolean active = true;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

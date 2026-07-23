@@ -1,4 +1,4 @@
-package com.senhorcafe.queuecart.common.exception;
+package com.senhorcafe.queuecart.config.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

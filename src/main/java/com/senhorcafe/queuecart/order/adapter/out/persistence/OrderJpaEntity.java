@@ -1,5 +1,6 @@
-package com.senhorcafe.queuecart.order.entity;
+package com.senhorcafe.queuecart.order.adapter.out.persistence;
 
+import com.senhorcafe.queuecart.order.domain.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -11,7 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "orders")
-public class Order {
+public class OrderJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +26,7 @@ public class Order {
 
     @ElementCollection
     @CollectionTable(name = "order_items", joinColumns = @JoinColumn(name = "order_id"))
-    private List<OrderItem> items;
+    private List<OrderItemEmbeddable> items;
 
     @CreationTimestamp
     @Column(name = "created_at")

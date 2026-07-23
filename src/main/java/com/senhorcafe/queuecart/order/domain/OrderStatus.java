@@ -1,4 +1,4 @@
-package com.senhorcafe.queuecart.order.entity;
+package com.senhorcafe.queuecart.order.domain;
 
 public enum OrderStatus {
     PENDING,

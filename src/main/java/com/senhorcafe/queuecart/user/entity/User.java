@@ -29,7 +29,7 @@ public class User {
     private Role role;
 
     @Column(name = "active")
-    private boolean active;
+    private boolean active = true;
 
     @CreationTimestamp
     @Column(name = "created_at")

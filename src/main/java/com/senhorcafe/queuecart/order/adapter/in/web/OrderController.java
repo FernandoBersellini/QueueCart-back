@@ -7,6 +7,9 @@ import com.senhorcafe.queuecart.order.adapter.in.web.dto.OrderItemRequestDTO;
 import com.senhorcafe.queuecart.order.application.OrderService;
 import com.senhorcafe.queuecart.order.domain.Order;
 import com.senhorcafe.queuecart.order.domain.OrderItem;
+import com.senhorcafe.queuecart.order.domain.OrderPageRequest;
+import com.senhorcafe.queuecart.order.domain.OrderPageResult;
+import com.senhorcafe.queuecart.config.web.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +34,11 @@ public class OrderController {
     }
 
     @GetMapping("all-orders")
-    public ResponseEntity<List<OrderDTO>> getAllOrders() {
-        return ResponseEntity.ok(orderService.getAllOrders().stream().map(this::toDTO).toList());
+    public ResponseEntity<PageResponseDTO<OrderDTO>> getAllOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(toPageResponse(orderService.getAllOrders(new OrderPageRequest(page, size))));
     }
 
     @GetMapping("order/{id}")
@@ -41,8 +47,12 @@ public class OrderController {
     }
 
     @GetMapping("order/user/{userId}")
-    public ResponseEntity<List<OrderDTO>> getOrdersByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(orderService.getOrdersByUser(userId).stream().map(this::toDTO).toList());
+    public ResponseEntity<PageResponseDTO<OrderDTO>> getOrdersByUser(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(toPageResponse(orderService.getOrdersByUser(userId, new OrderPageRequest(page, size))));
     }
 
     @PatchMapping("order/{id}/confirm")
@@ -69,6 +79,17 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private PageResponseDTO<OrderDTO> toPageResponse(OrderPageResult<Order> pageResult) {
+        return new PageResponseDTO<>(
+                pageResult.content().stream().map(this::toDTO).toList(),
+                pageResult.page(),
+                pageResult.size(),
+                pageResult.totalElements(),
+                pageResult.totalPages(),
+                pageResult.page() >= pageResult.totalPages() - 1
+        );
     }
 
     private OrderItem toDomainItem(OrderItemRequestDTO dto) {

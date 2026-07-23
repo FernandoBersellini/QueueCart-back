@@ -1,6 +1,5 @@
 package com.senhorcafe.queuecart.order.domain;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository {
@@ -8,9 +7,9 @@ public interface OrderRepository {
 
     Optional<Order> findById(Long id);
 
-    List<Order> findAll();
+    OrderPageResult<Order> findAll(OrderPageRequest pageRequest);
 
-    List<Order> findByUserId(Long userId);
+    OrderPageResult<Order> findByUserId(Long userId, OrderPageRequest pageRequest);
 
     void deleteById(Long id);
 }

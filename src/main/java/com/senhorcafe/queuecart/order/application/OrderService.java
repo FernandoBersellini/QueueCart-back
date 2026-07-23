@@ -2,6 +2,8 @@ package com.senhorcafe.queuecart.order.application;
 
 import com.senhorcafe.queuecart.order.domain.Order;
 import com.senhorcafe.queuecart.order.domain.OrderItem;
+import com.senhorcafe.queuecart.order.domain.OrderPageRequest;
+import com.senhorcafe.queuecart.order.domain.OrderPageResult;
 import com.senhorcafe.queuecart.order.domain.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,12 +27,12 @@ public class OrderService {
         return findOrderOrThrow(orderId);
     }
 
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public OrderPageResult<Order> getAllOrders(OrderPageRequest pageRequest) {
+        return orderRepository.findAll(pageRequest);
     }
 
-    public List<Order> getOrdersByUser(Long userId) {
-        return orderRepository.findByUserId(userId);
+    public OrderPageResult<Order> getOrdersByUser(Long userId, OrderPageRequest pageRequest) {
+        return orderRepository.findByUserId(userId, pageRequest);
     }
 
     public Order confirmOrder(Long orderId) {

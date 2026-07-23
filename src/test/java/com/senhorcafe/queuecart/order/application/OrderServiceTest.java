@@ -2,6 +2,8 @@ package com.senhorcafe.queuecart.order.application;
 
 import com.senhorcafe.queuecart.order.domain.Order;
 import com.senhorcafe.queuecart.order.domain.OrderItem;
+import com.senhorcafe.queuecart.order.domain.OrderPageRequest;
+import com.senhorcafe.queuecart.order.domain.OrderPageResult;
 import com.senhorcafe.queuecart.order.domain.OrderRepository;
 import com.senhorcafe.queuecart.order.domain.OrderStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,22 +86,24 @@ class OrderServiceTest {
     @Test
     void getAllOrdersShouldDelegateToRepository() {
         Order order = buildOrder(1L, OrderStatus.PENDING);
-        when(orderRepository.findAll()).thenReturn(List.of(order));
+        OrderPageRequest pageRequest = new OrderPageRequest(0, 20);
+        when(orderRepository.findAll(pageRequest)).thenReturn(new OrderPageResult<>(List.of(order), 0, 20, 1, 1));
 
-        List<Order> result = orderService.getAllOrders();
+        OrderPageResult<Order> result = orderService.getAllOrders(pageRequest);
 
-        assertThat(result).hasSize(1);
+        assertThat(result.content()).hasSize(1);
     }
 
     @Test
     void getOrdersByUserShouldDelegateToRepository() {
         Order order = buildOrder(1L, OrderStatus.PENDING);
-        when(orderRepository.findByUserId(1L)).thenReturn(List.of(order));
+        OrderPageRequest pageRequest = new OrderPageRequest(0, 20);
+        when(orderRepository.findByUserId(1L, pageRequest)).thenReturn(new OrderPageResult<>(List.of(order), 0, 20, 1, 1));
 
-        List<Order> result = orderService.getOrdersByUser(1L);
+        OrderPageResult<Order> result = orderService.getOrdersByUser(1L, pageRequest);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getUserId()).isEqualTo(1L);
+        assertThat(result.content()).hasSize(1);
+        assertThat(result.content().get(0).getUserId()).isEqualTo(1L);
     }
 
     @Test

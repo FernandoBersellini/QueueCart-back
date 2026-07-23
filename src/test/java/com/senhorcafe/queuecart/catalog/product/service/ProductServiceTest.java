@@ -7,11 +7,15 @@ import com.senhorcafe.queuecart.catalog.product.dto.ProductDTO;
 import com.senhorcafe.queuecart.catalog.product.dto.UpdateProductDTO;
 import com.senhorcafe.queuecart.catalog.product.entity.Product;
 import com.senhorcafe.queuecart.catalog.product.repository.ProductRepository;
+import com.senhorcafe.queuecart.config.web.PageResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
@@ -68,13 +72,14 @@ class ProductServiceTest {
     void returnAllProductsShouldMapEntitiesToDTOs() {
         Category category = buildCategory(1L, "Coffee");
         Product product = buildProduct(1L, "Espresso", category);
-        when(productRepository.findAll()).thenReturn(List.of(product));
+        Pageable pageable = PageRequest.of(0, 20);
+        when(productRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(product), pageable, 1));
 
-        ResponseEntity<List<ProductDTO>> response = productService.returnAllProducts();
+        ResponseEntity<PageResponseDTO<ProductDTO>> response = productService.returnAllProducts(pageable);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).hasSize(1);
-        assertThat(response.getBody().get(0).categoryId()).isEqualTo(1L);
+        assertThat(response.getBody().content()).hasSize(1);
+        assertThat(response.getBody().content().get(0).categoryId()).isEqualTo(1L);
     }
 
     @Test
@@ -101,12 +106,13 @@ class ProductServiceTest {
     void returnByCategoryIdShouldMapEntitiesToDTOs() {
         Category category = buildCategory(1L, "Coffee");
         Product product = buildProduct(1L, "Espresso", category);
-        when(productRepository.findByCategoryId(1L)).thenReturn(List.of(product));
+        Pageable pageable = PageRequest.of(0, 20);
+        when(productRepository.findByCategoryId(1L, pageable)).thenReturn(new PageImpl<>(List.of(product), pageable, 1));
 
-        ResponseEntity<List<ProductDTO>> response = productService.returnByCategoryId(1L);
+        ResponseEntity<PageResponseDTO<ProductDTO>> response = productService.returnByCategoryId(1L, pageable);
 
-        assertThat(response.getBody()).hasSize(1);
-        assertThat(response.getBody().get(0).name()).isEqualTo("Espresso");
+        assertThat(response.getBody().content()).hasSize(1);
+        assertThat(response.getBody().content().get(0).name()).isEqualTo("Espresso");
     }
 
     @Test

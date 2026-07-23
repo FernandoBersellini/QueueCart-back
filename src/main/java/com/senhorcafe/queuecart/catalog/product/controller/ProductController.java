@@ -4,11 +4,13 @@ import com.senhorcafe.queuecart.catalog.product.dto.CreateProductDTO;
 import com.senhorcafe.queuecart.catalog.product.dto.ProductDTO;
 import com.senhorcafe.queuecart.catalog.product.dto.UpdateProductDTO;
 import com.senhorcafe.queuecart.catalog.product.service.ProductService;
+import com.senhorcafe.queuecart.config.web.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("product/")
@@ -17,8 +19,10 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("all-products")
-    public ResponseEntity<List<ProductDTO>> productIndex() {
-        return productService.returnAllProducts();
+    public ResponseEntity<PageResponseDTO<ProductDTO>> productIndex(
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        return productService.returnAllProducts(pageable);
     }
 
     @GetMapping("product/{id}")
@@ -27,8 +31,11 @@ public class ProductController {
     }
 
     @GetMapping("product/category/{categoryId}")
-    public ResponseEntity<List<ProductDTO>> productByCategory(@PathVariable Long categoryId) {
-        return productService.returnByCategoryId(categoryId);
+    public ResponseEntity<PageResponseDTO<ProductDTO>> productByCategory(
+            @PathVariable Long categoryId,
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        return productService.returnByCategoryId(categoryId, pageable);
     }
 
     @PostMapping("create-product")

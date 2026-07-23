@@ -2,8 +2,13 @@ package com.senhorcafe.queuecart.order.adapter.out.persistence;
 
 import com.senhorcafe.queuecart.order.domain.Order;
 import com.senhorcafe.queuecart.order.domain.OrderItem;
+import com.senhorcafe.queuecart.order.domain.OrderPageRequest;
+import com.senhorcafe.queuecart.order.domain.OrderPageResult;
 import com.senhorcafe.queuecart.order.domain.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -36,18 +41,36 @@ class OrderRepositoryAdapter implements OrderRepository {
     }
 
     @Override
-    public List<Order> findAll() {
-        return springDataOrderRepository.findAll().stream().map(this::toDomain).toList();
+    public OrderPageResult<Order> findAll(OrderPageRequest pageRequest) {
+        return toPageResult(springDataOrderRepository.findAll(toPageable(pageRequest)));
     }
 
     @Override
-    public List<Order> findByUserId(Long userId) {
-        return springDataOrderRepository.findByUserId(userId).stream().map(this::toDomain).toList();
+    public OrderPageResult<Order> findByUserId(Long userId, OrderPageRequest pageRequest) {
+        return toPageResult(springDataOrderRepository.findByUserId(userId, toPageable(pageRequest)));
     }
 
     @Override
     public void deleteById(Long id) {
         springDataOrderRepository.deleteById(id);
+    }
+
+    private Pageable toPageable(OrderPageRequest pageRequest) {
+        return org.springframework.data.domain.PageRequest.of(
+                pageRequest.page(),
+                pageRequest.size(),
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+    }
+
+    private OrderPageResult<Order> toPageResult(Page<OrderJpaEntity> page) {
+        return new OrderPageResult<>(
+                page.getContent().stream().map(this::toDomain).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 
     private OrderItemEmbeddable toEmbeddable(OrderItem item) {

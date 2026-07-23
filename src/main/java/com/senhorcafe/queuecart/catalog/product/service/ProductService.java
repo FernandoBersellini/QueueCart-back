@@ -7,13 +7,13 @@ import com.senhorcafe.queuecart.catalog.product.dto.ProductDTO;
 import com.senhorcafe.queuecart.catalog.product.dto.UpdateProductDTO;
 import com.senhorcafe.queuecart.catalog.product.entity.Product;
 import com.senhorcafe.queuecart.catalog.product.repository.ProductRepository;
+import com.senhorcafe.queuecart.config.web.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +21,8 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-    public ResponseEntity<List<ProductDTO>> returnAllProducts() {
-        List<ProductDTO> products = productRepository.findAll().stream()
-                .map(this::toDTO)
-                .toList();
-
-        return ResponseEntity.ok().body(products);
+    public ResponseEntity<PageResponseDTO<ProductDTO>> returnAllProducts(Pageable pageable) {
+        return ResponseEntity.ok().body(PageResponseDTO.from(productRepository.findAll(pageable).map(this::toDTO)));
     }
 
     public ResponseEntity<ProductDTO> returnProductDetails(Long productId) {
@@ -34,12 +30,8 @@ public class ProductService {
         return ResponseEntity.ok().body(toDTO(product));
     }
 
-    public ResponseEntity<List<ProductDTO>> returnByCategoryId(Long categoryId) {
-        List<ProductDTO> products = productRepository.findByCategoryId(categoryId).stream()
-                .map(this::toDTO)
-                .toList();
-
-        return ResponseEntity.ok().body(products);
+    public ResponseEntity<PageResponseDTO<ProductDTO>> returnByCategoryId(Long categoryId, Pageable pageable) {
+        return ResponseEntity.ok().body(PageResponseDTO.from(productRepository.findByCategoryId(categoryId, pageable).map(this::toDTO)));
     }
 
     public ResponseEntity<ProductDTO> createProduct(CreateProductDTO createProductDTO) {
